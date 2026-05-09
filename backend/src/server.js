@@ -3,9 +3,13 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { connectDB } from './libs/db.js';
 import authRoute from './routes/authRoute.js';
+import userRoute from './routes/userRoute.js';
+import { protectedRoute } from './middlewares/authMiddleware.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Express will run code up to down.
 
 // middlewares
 app.use(express.json()); // help express understand and can read request body by JSON type
@@ -15,6 +19,8 @@ app.use(cookieParser()); // parse cookies
 app.use('/api/auth', authRoute);
 
 // private routes
+app.use(protectedRoute); // middleware
+app.use('/api/users', userRoute);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
