@@ -19,7 +19,11 @@ export const signUp = async (req, res) => {
     if (userExist) {
       return res.status(409).json({ message: 'User exist' });
     }
-
+    // Check amil exist
+    const emailExit = await User.findOne({ email });
+    if (emailExit) {
+      return res.status(409).json({ message: 'Email exist' });
+    }
     // encode password
     const saltRound = 10;
     const hashedPassword = await bcrypt.hash(password, saltRound);

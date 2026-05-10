@@ -8,6 +8,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '../ui/label';
 import type React from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router';
 
 const signInSchema = z.object({
   username: z.string().min(3, 'User name at least 3 characters'),
@@ -31,8 +33,13 @@ export function SignInForm({
     resolver: zodResolver(signInSchema),
   });
 
+  const { signIn } = useAuthStore();
+  const navigate = useNavigate();
   const onSubmit = async (data: SigninFormValues) => {
     // call backend
+    const { username, password } = data;
+    await signIn(username, password);
+    navigate('/');
   };
 
   return (

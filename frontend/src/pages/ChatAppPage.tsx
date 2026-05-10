@@ -1,5 +1,11 @@
+import Logout from '@/components/auth/logOut';
+
 function ChatAppPage() {
-  return <div>ChatAppPage</div>;
+  return (
+    <div>
+      <Logout />
+    </div>
+  );
 }
 
 export default ChatAppPage;

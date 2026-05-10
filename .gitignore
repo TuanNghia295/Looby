@@ -4,7 +4,7 @@ package-lock.json
 yarn.lock
 
 # Environment variables
-.env
+# .env
 .env.local
 .env.*.local
 
@@ -31,4 +31,4 @@ out/
 # OS
 .DS_Store
 Thumbs.db
-.gitnexus
+# .gitnexus

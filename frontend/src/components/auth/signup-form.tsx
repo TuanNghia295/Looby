@@ -39,7 +39,7 @@ export function SignupForm({
   const onSubmit = async (data: SignupFormValues) => {
     const { username, password, email, firstname, lastname } = data;
 
-    await signUp(username, password, email, firstname, lastname);
+    await signUp(username, firstname, lastname, email, password);
     navigate('/signin');
   };
 
