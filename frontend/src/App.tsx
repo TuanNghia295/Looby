@@ -5,6 +5,7 @@ import ChatAppPage from './pages/ChatAppPage';
 import { Toaster } from 'sonner';
 import { useDarkMode } from './hooks/useDarkMode';
 import { DarkModeToggle } from './components/dark-mode-toggle';
+import ProtectedRoute from './components/auth/protectedRoute';
 
 function App() {
   useDarkMode();
@@ -22,7 +23,9 @@ function App() {
           <Route path="/signup" element={<SignUpPage />} />
 
           {/* private routes */}
-          <Route path="/" element={<ChatAppPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<ChatAppPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

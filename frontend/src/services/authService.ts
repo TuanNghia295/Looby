@@ -28,4 +28,14 @@ export const authService = {
   logOut: async () => {
     return await api.post('/auth/logout');
   },
+
+  fetchMe: async () => {
+    const res = await api.get('/users/me');
+    return res.data.message;
+  },
+
+  refresh: async () => {
+    const res = await api.post('/auth/refresh');
+    return res.data.accessToken;
+  },
 };

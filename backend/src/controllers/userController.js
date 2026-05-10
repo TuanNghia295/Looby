@@ -8,3 +8,7 @@ export const userInfo = (req, res) => {
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const test = async (req, res) => {
+  return res.status(200).json({ message: 'ok' });
+};

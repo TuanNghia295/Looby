@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import JWT from 'jsonwebtoken';
 import Session from '../models/Session.js';
 import crypto from 'crypto';
-const ACCESS_TOKEN_TTL = '30m';
+const ACCESS_TOKEN_TTL = '15m';
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 export const signUp = async (req, res) => {
   try {
@@ -115,4 +115,37 @@ export const logout = async (req, res) => {
   // delete cookie
   res.clearCookie('refreshToken');
   return res.sendStatus(204);
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    // get refreshToken from cookies
+    const token = req.cookies?.refreshToken;
+    if (!token)
+      return res.status(401).json({ message: 'Token does not exist' });
+
+    // compare token in DB
+    const session = await Session.findOne({
+      refreshToken: token,
+    });
+    if (!session)
+      return res.status(403).json({ message: 'Token invalid or expired' });
+
+    // Check outdate of token
+    if (session.expiresAt < new Date()) {
+      return res.status(403).json({ message: 'Token expired' });
+    }
+
+    // create new access token
+    const accessToken = JWT.sign(
+      { userId: session.userId },
+      process.env.ACCESS_TOKEN,
+      { expiresIn: ACCESS_TOKEN_TTL }
+    );
+    // return
+    return res.status(200).json({ accessToken });
+  } catch (error) {
+    console.error('Error when call refreshToken', error);
+    return res.status(500).json({ message: 'Server Error' });
+  }
 };
