@@ -22,7 +22,7 @@ const friendSchema = new mongoose.Schema(
 // Sắp xếp dữ liệu để tối ưu truy vấn chỉ cần kiểm tra 1 chiều
 
 // Đoạn này chạy trước khi lưu dữ liệu vào DB
-friendSchema.pre('save', function (next) {
+friendSchema.pre('save', function () {
   const a = this.userA.toString();
   const b = this.userB.toString();
 
@@ -30,7 +30,6 @@ friendSchema.pre('save', function (next) {
     this.userA = new mongoose.Types.ObjectId(b);
     this.userB = new mongoose.Types.ObjectId(a);
   }
-  next();
 });
 
 friendSchema.index({ userA: 1, userB: 1 }, { unique: true });
