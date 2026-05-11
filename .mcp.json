@@ -1,13 +1,13 @@
 {
   "mcpServers": {
     "gitnexus": {
-      "command": "C:\\Users\\tuann\\AppData\\Roaming\\npm\\gitnexus.cmd",
+      "command": "gitnexus",
       "args": [
         "mcp"
       ]
     },
     "serena": {
-      "command": "C:\\Users\\tuann\\.local\\bin\\uv.exe",
+      "command": "uv",
       "args": [
         "tool",
         "run",
