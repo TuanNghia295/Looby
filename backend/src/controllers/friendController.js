@@ -154,16 +154,53 @@ export const declineFriendRequest = async (req, res) => {
   }
 };
 
+// Danh sach ban be
 export const getAllFriends = async (req, res) => {
   try {
+    const userId = req.user._id;
+    const friendList = await Friend.find({
+      $or: [
+        {
+          userA: userId,
+        },
+        {
+          userB: userId,
+        },
+      ],
+    })
+      .populate('userA', '_id userName displayName avatarUrl')
+      .populate('userB', '_id userName displayName avatarUrl')
+      .lean();
+
+    if (!friendList.length) {
+      return res.status(200).json({ friends: [] });
+    }
+
+    // Lấy ra những người bạn từ friend ship
+    const friends = friendList.map(f =>
+      f.userA._id.toString() === userId.toString() ? f.userB : f.userA
+    );
+
+    return res.status(200).json({ friends });
   } catch (error) {
     console.error('Get all friend failed', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
+// Danh sách yêu cầu kết bạn đã gửi và nhận
 export const getFriendRequest = async (req, res) => {
   try {
+    const userId = req.user._id;
+
+    const populateFields = '_id userName displayName avatarUrl';
+
+    const [sent, received] = await Promise.all([
+      FriendRequest.find({ from: userId }).populate('to', populateFields),
+      FriendRequest.find({ to: userId }).populate('from', populateFields),
+    ]);
+
+    res.status(200).json({ sent, received });
   } catch (error) {
     console.error('Get friend request failed', error);
     return res.status(500).json({ message: 'Internal server error' });
