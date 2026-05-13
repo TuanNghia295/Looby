@@ -6,6 +6,7 @@ import authRoute from './routes/authRoute.js';
 import userRoute from './routes/userRoute.js';
 import messageRoute from './routes/messageRoute.js';
 import friendRoute from './routes/friendRoute.js';
+import conversationRoute from './routes/conservation.js';
 import { protectedRoute } from './middlewares/authMiddleware.js';
 import cors from 'cors';
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(protectedRoute); // middleware
 app.use('/api/users', userRoute);
 app.use('/api/friends', friendRoute);
 app.use('/api/messages', messageRoute);
+app.use('/api/conversation', conversationRoute);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

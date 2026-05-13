@@ -1,13 +1,13 @@
 {
   "repoPath": "/home/ntnghia13/Documents/Looby",
-  "lastCommit": "c0b30c079d7ec4711b5fb65867dba1bfa012bc09",
-  "indexedAt": "2026-05-11T03:09:27.346Z",
+  "lastCommit": "83f9c04e7737804abaa4dde9a31f9ea29bb36343",
+  "indexedAt": "2026-05-13T08:32:12.011Z",
   "remoteUrl": "https://github.com/TuanNghia295/Looby",
   "stats": {
-    "files": 47,
-    "nodes": 216,
-    "edges": 321,
-    "communities": 5,
+    "files": 59,
+    "nodes": 302,
+    "edges": 429,
+    "communities": 6,
     "processes": 0,
     "embeddings": 0
   }
