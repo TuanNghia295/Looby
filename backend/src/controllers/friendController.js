@@ -19,6 +19,8 @@ export const sendFriendRequest = async (req, res) => {
     }
 
     // Kiểm tra xem đã là bạn bè hoặc có lời mời đang chờ chưa
+    // Đây là một thủ thuật (trick) để nhất quán hóa dữ liệu đầu vào,
+    // giúp logic xử lý phía sau (như lưu Database) không bị nhân đôi hoặc sai lệch
     let userA = from.toString();
     let userB = to.toString();
     if (userA > userB) {

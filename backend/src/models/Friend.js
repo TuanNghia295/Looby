@@ -5,12 +5,12 @@ const friendSchema = new mongoose.Schema(
     userA: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      require: true,
+      required: true,
     },
     userB: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      require: true,
+      required: true,
     },
   },
   {

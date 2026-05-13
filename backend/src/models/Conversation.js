@@ -5,11 +5,11 @@ const participantSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      require: true,
+      required: true,
     },
     joinedAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
     },
   },
   {
@@ -53,11 +53,11 @@ const conversationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['direct', 'group'], // Giới hạn giá trị hợp lệ
-      require: true,
+      required: true,
     },
     participants: {
       type: [participantSchema],
-      require: true,
+      required: true,
     },
     group: {
       type: groupSchema,

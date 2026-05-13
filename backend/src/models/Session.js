@@ -5,17 +5,17 @@ const sessionSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      require: true,
+      required: true,
       index: true,
     },
     refreshToken: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
     },
     expiresAt: {
       type: Date,
-      require: true,
+      required: true,
     },
   },
   { timestamps: true }

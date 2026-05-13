@@ -4,25 +4,25 @@ const userSchema = new mongoose.Schema(
   {
     userName: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
       lowerase: true,
     },
 
     hashedPassword: {
       type: String,
-      require: true,
+      required: true,
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       lowerase: true,
       trim: true,
     },
     displayName: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
     avaterUrl: {
