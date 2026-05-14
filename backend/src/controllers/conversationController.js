@@ -58,17 +58,17 @@ export const createConservation = async (req, res) => {
 
     if (type === 'direct') {
       if (uniqueParticipantsIds.length !== 1) {
-        return res
-          .status(400)
-          .json({ message: 'Direct conversation needs exactly one participant' });
+        return res.status(400).json({
+          message: 'Direct conversation needs exactly one participant',
+        });
       }
 
       const participantId = uniqueParticipantsIds[0];
 
       conversation = await Conversation.findOne({
         type: 'direct',
-        'participants.userId': { $all: [creatorId, participantId] },
-      });
+        'participant.userId': { $all: [creatorId, participantId] },
+      }).populate('participant.userId', 'displayName');
 
       if (!conversation) {
         conversation = await Conversation.create({
@@ -136,6 +136,89 @@ export const createConservation = async (req, res) => {
   }
 };
 
-export const getConversations = async (req, res) => {};
+export const getConversations = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-export const getMessages = async (req, res) => {};
+    // Try cập vào danh sách participant.userId trong conversation để tìm kiếm theo userId
+    const [conversations, total] = await Promise.all([
+      Conversation.find({ 'participants.userId': userId })
+        .populate('participants.userId', 'displayName avatarUrl')
+        .populate('group.createdBy', 'displayName avatarUrl')
+        .populate('lastMessage.senderId', 'displayName avatarUrl')
+        .sort({ lastMessage: -1, updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Conversation.countDocuments({ 'participants.userId': userId }),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: conversations.length,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      conversations,
+    });
+  } catch (error) {
+    console.error('Error fetching conversations:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch conversations',
+    });
+  }
+};
+// Lấy tin nhắn trong 1 cuộc hội thoại
+export const getMessages = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const skip = parseInt(req.query.skip) || 1;
+    const userId = req.user._id;
+    const { conversationId } = req.params;
+
+    if (!conversationId || !mongoose.Types.ObjectId.isValid(conversationId)) {
+      return res.status(400).json({ message: 'Invalid conversation ID' });
+    }
+
+    // Chỉ người dùng sở hữu cuộc trò chuyện đó mới lấy được message trong cuộc trò chuyện
+    // Kiểm tra xem user có thuộc conversation này không
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+      'participants.userId': userId, // kiểm tra userId có trong participants không
+    }).select('participants');
+
+    if (!conversation) {
+      return res.status(403).json({
+        message: 'You do not have access to this conversation',
+      });
+    }
+
+    // Lấy ra danh sách message nếu như userId thuộc conversation này
+    const messages = await Message.find({
+      conversationId: conversationId,
+    })
+      .populate('senderId', 'displayName avatarUrl')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+    // Reverse để messages mới nhất ở dưới
+
+    const reversedMessages = messages.reverse();
+    return res.status(200).json({
+      success: true,
+      count: reversedMessages.length,
+      page,
+      limit,
+      messages: reversedMessages,
+    });
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

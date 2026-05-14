@@ -6,7 +6,7 @@ import authRoute from './routes/authRoute.js';
 import userRoute from './routes/userRoute.js';
 import messageRoute from './routes/messageRoute.js';
 import friendRoute from './routes/friendRoute.js';
-import conversationRoute from './routes/conservation.js';
+import conversationRoute from './routes/conversation.js';
 import { protectedRoute } from './middlewares/authMiddleware.js';
 import cors from 'cors';
 dotenv.config();

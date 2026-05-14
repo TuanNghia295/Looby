@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import JWT from 'jsonwebtoken';
 import Session from '../models/Session.js';
 import crypto from 'crypto';
-const ACCESS_TOKEN_TTL = '15m';
+const ACCESS_TOKEN_TTL = '30m';
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 export const signUp = async (req, res) => {
   try {
@@ -88,7 +88,7 @@ export const signIn = async (req, res) => {
     //  return refresh token to cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true, // prevent access cookie by JS
-      secure: true, // only access by HTTPS
+      secure: false, // only access by HTTPS
       samesite: 'none', //backend, frontend single deployment
       maxAge: REFRESH_TOKEN_TTL,
     });
