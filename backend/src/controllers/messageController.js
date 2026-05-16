@@ -53,7 +53,28 @@ export const sendDirectMessage = async (req, res) => {
 };
 
 export const sendGroupMessage = async (req, res) => {
-  // 1. Hành động tạo group (Tạo cuộc trò chuyện)
-  // 2. Thêm bạn bè vào group (participantId)
-  // 3. Tạo tin nhắn và gửi vào group
+  try {
+    const { conversationId, content } = req.body;
+    const senderId = req.user._id;
+    const conversation = req.conversation;
+
+    if (!content) {
+      return res.status(400).json('Missing content');
+    }
+
+    const message = await Message.create({
+      conversationId,
+      senderId,
+      content,
+    });
+
+    updateConversationAfterCreateMessage(conversation, message, senderId);
+
+    await conversation.save();
+
+    return res.status(201).json({ message });
+  } catch (error) {
+    console.log('ERROR when sent group message', error);
+    return res.status(500).json('Internal server error');
+  }
 };

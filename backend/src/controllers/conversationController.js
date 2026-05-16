@@ -175,9 +175,8 @@ export const getConversations = async (req, res) => {
 // Lấy tin nhắn trong 1 cuộc hội thoại
 export const getMessages = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
-    const skip = parseInt(req.query.skip) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const cursor = req.query.cursor;
     const userId = req.user._id;
     const { conversationId } = req.params;
 
@@ -186,10 +185,9 @@ export const getMessages = async (req, res) => {
     }
 
     // Chỉ người dùng sở hữu cuộc trò chuyện đó mới lấy được message trong cuộc trò chuyện
-    // Kiểm tra xem user có thuộc conversation này không
     const conversation = await Conversation.findOne({
       _id: conversationId,
-      'participants.userId': userId, // kiểm tra userId có trong participants không
+      'participants.userId': userId,
     }).select('participants');
 
     if (!conversation) {
@@ -198,24 +196,31 @@ export const getMessages = async (req, res) => {
       });
     }
 
-    // Lấy ra danh sách message nếu như userId thuộc conversation này
-    const messages = await Message.find({
-      conversationId: conversationId,
-    })
+    const query = { conversationId };
+    if (cursor) {
+      query.createdAt = { $lt: new Date(cursor) };
+    }
+
+    const messages = await Message.find(query)
       .populate('senderId', 'displayName avatarUrl')
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
+      .limit(limit + 1)
       .lean();
-    // Reverse để messages mới nhất ở dưới
 
+    let nextCursor = null;
+    if (messages.length > limit) {
+      nextCursor = messages[limit].createdAt.toISOString();
+      messages.splice(limit);
+    }
+
+    // Reverse để messages mới nhất ở dưới
     const reversedMessages = messages.reverse();
     return res.status(200).json({
       success: true,
       count: reversedMessages.length,
-      page,
       limit,
       messages: reversedMessages,
+      nextCursor,
     });
   } catch (error) {
     console.error('Error fetching messages:', error);
